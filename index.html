@@ -507,6 +507,14 @@ section{padding:5rem 2rem}
   <p>© 2026 Calbec Opérations — Daniel Calderón Torres</p>
   <p class="footer-line" data-fr="Implantation opérationnelle terrain | Montréal, QC | Trilingue FR · EN · ES" data-en="On-site operational implementation | Montreal, QC | Trilingual FR · EN · ES" data-es="Implantación operacional en terreno | Montréal, QC | Trilingüe FR · EN · ES">Implantation opérationnelle terrain | Montréal, QC | Trilingue FR · EN · ES</p>
 </footer>
+  <!-- ═══ COOKIE BANNER ═══ -->
+<div id="cookie-banner" style="display:none">
+  <p data-fr="Ce site utilise Google Analytics pour mesurer l'audience. Vos données sont traitées conformément à la Loi 25 (Québec)." data-en="This site uses Google Analytics to measure traffic. Your data is processed in accordance with Quebec's Law 25." data-es="Este sitio usa Google Analytics para medir el tráfico. Sus datos se procesan conforme a la Ley 25 de Quebec.">Ce site utilise Google Analytics pour mesurer l'audience. Vos données sont traitées conformément à la Loi 25 (Québec).</p>
+  <div class="cookie-buttons">
+    <button class="cookie-btn cookie-decline" onclick="declineCookies()" data-fr="Refuser" data-en="Decline" data-es="Rechazar">Refuser</button>
+    <button class="cookie-btn cookie-accept" onclick="acceptCookies()" data-fr="Accepter" data-en="Accept" data-es="Aceptar">Accepter</button>
+  </div>
+</div>
 
 <script>
 let currentLang='fr';
@@ -562,6 +570,20 @@ document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 window.addEventListener('scroll',()=>{
   const n=document.querySelector('.navbar');
   n.style.boxShadow=window.pageYOffset>80?'0 4px 24px rgba(0,0,0,0.12)':'none';
+});
+// Cookie banner
+function acceptCookies(){
+  localStorage.setItem('cookieConsent','accepted');
+  document.getElementById('cookie-banner').style.display='none';
+}
+function declineCookies(){
+  localStorage.setItem('cookieConsent','declined');
+  document.getElementById('cookie-banner').style.display='none';
+}
+window.addEventListener('load',function(){
+  if(!localStorage.getItem('cookieConsent')){
+    document.getElementById('cookie-banner').style.display='flex';
+  }
 });
 </script>
 </body>
