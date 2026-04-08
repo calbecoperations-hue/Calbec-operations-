@@ -586,5 +586,143 @@ window.addEventListener('load',function(){
   }
 });
 </script>
-</body>
+<!--
+==========================================================
+  BEC WIDGET — calbecoperations.com
+  Instrucciones de instalación:
+  1. Pegar este bloque completo justo antes de </body>
+     en tu archivo index.html de GitHub Pages.
+  2. Eliminar cualquier snippet anterior de tawk.to
+     si ya lo habías pegado antes.
+  3. El idioma se detecta automáticamente del <html lang="">
+     de la página (fr / en / es).
+==========================================================
+-->
+
+<!-- ── TAWK.TO SCRIPT (carga en background, burbuja oculta) ── -->
+<script type="text/javascript">
+var Tawk_API = Tawk_API || {};
+var Tawk_LoadStart = new Date();
+
+// Ocultar la burbuja por defecto de tawk.to — Bec la reemplaza
+Tawk_API.onLoad = function() {
+  Tawk_API.hideWidget();
+};
+
+(function(){
+  var s1 = document.createElement("script"),
+      s0 = document.getElementsByTagName("script")[0];
+  s1.async = true;
+  s1.src = 'https://embed.tawk.to/69d6df0cb7c31c1c3301a274/1jlnlei12';
+  s1.charset = 'UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1, s0);
+})();
+</script>
+
+<!-- ── FUENTES BEC ── -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ── ESTILOS BEC ── -->
+<style>
+  /* Logo unit: chevron pegado sobre la letra */
+  .bec-logo-unit {
+    display: flex; flex-direction: column;
+    align-items: center; line-height: 1;
+  }
+  .bec-logo-unit svg { display: block; margin-bottom: -7px; position: relative; z-index: 1; }
+  .bec-logo-letter {
+    color: white; font-family: 'Cormorant Garamond', serif;
+    font-weight: 700; line-height: 1; position: relative; z-index: 0;
+  }
+
+  /* FAB */
+  #bec-fab {
+    position: fixed; bottom: 24px; right: 24px;
+    display: flex; align-items: center; gap: 13px;
+    padding: 0 24px 0 18px; height: 54px;
+    background: #2B5FEC; border-radius: 12px;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(43,95,236,0.35);
+    transition: background 0.18s, box-shadow 0.2s, transform 0.15s;
+    z-index: 99998; outline: none;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  #bec-fab:hover {
+    background: #3B6FFF;
+    box-shadow: 0 0 0 4px rgba(59,111,255,0.28), 0 6px 24px rgba(43,95,236,0.65);
+    transform: translateY(-2px);
+  }
+  #bec-fab:active { transform: translateY(0); }
+  #bec-fab .bec-logo-letter { font-size: 26px; }
+  #bec-fab-label {
+    color: white; font-family: 'Cormorant Garamond', serif;
+    font-size: 23px; font-weight: 700;
+    letter-spacing: 0.01em; white-space: nowrap;
+  }
+
+  /* Ocultar burbuja nativa de tawk.to */
+  #tawk-bubble-container,
+  .tawk-min-container,
+  iframe[title*="tawk"] { display: none !important; }
+</style>
+
+<!-- ── FAB BEC ── -->
+<button id="bec-fab" onclick="becToggle()" aria-label="Chat Bec">
+  <div class="bec-logo-unit">
+    <svg viewBox="0 0 40 12" width="26" height="8" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,10 20,0 40,10 20,4" fill="#E8920A"/>
+    </svg>
+    <span class="bec-logo-letter">B</span>
+  </div>
+  <span id="bec-fab-label">Parler à Bec</span>
+</button>
+
+<!-- ── LÓGICA BEC ── -->
+<script>
+(function() {
+
+  /* ── Textos por idioma ── */
+  var LABELS = {
+    fr: "Parler à Bec",
+    en: "Talk to Bec",
+    es: "Hablar con Bec"
+  };
+
+  /* ── Detectar idioma de la página ── */
+  var pageLang = (document.documentElement.lang || 'fr').substring(0, 2).toLowerCase();
+  var lang = LABELS[pageLang] ? pageLang : 'fr';
+
+  /* ── Aplicar label al FAB ── */
+  document.getElementById('bec-fab-label').textContent = LABELS[lang];
+
+  /* ── Actualizar si el idioma cambia dinámicamente
+        (para sitios que cambian lang= sin recargar) ── */
+  var langObserver = new MutationObserver(function() {
+    var newLang = (document.documentElement.lang || 'fr').substring(0, 2).toLowerCase();
+    if (LABELS[newLang]) {
+      document.getElementById('bec-fab-label').textContent = LABELS[newLang];
+    }
+  });
+  langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+  /* ── Abrir / cerrar tawk.to al clic en el FAB ── */
+  window.becToggle = function() {
+    if (typeof Tawk_API !== 'undefined' && Tawk_API.toggle) {
+      Tawk_API.toggle();
+    }
+  };
+
+  /* ── Ocultar burbuja nativa cuando tawk.to esté listo ── */
+  var hideInterval = setInterval(function() {
+    if (typeof Tawk_API !== 'undefined' && Tawk_API.hideWidget) {
+      Tawk_API.hideWidget();
+      clearInterval(hideInterval);
+    }
+  }, 500);
+
+})();
+</script>
+<!--End of Bec Widget--></body>
 </html>
