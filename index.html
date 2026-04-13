@@ -586,47 +586,12 @@ window.addEventListener('load',function(){
   }
 });
 </script>
-<!--
-==========================================================
-  BEC WIDGET — calbecoperations.com
-  Instrucciones de instalación:
-  1. Pegar este bloque completo justo antes de </body>
-     en tu archivo index.html de GitHub Pages.
-  2. Eliminar cualquier snippet anterior de tawk.to
-     si ya lo habías pegado antes.
-  3. El idioma se detecta automáticamente del <html lang="">
-     de la página (fr / en / es).
-==========================================================
--->
-
-<!-- ── TAWK.TO SCRIPT (carga en background, burbuja oculta) ── -->
-<script type="text/javascript">
-var Tawk_API = Tawk_API || {};
-var Tawk_LoadStart = new Date();
-
-// Ocultar la burbuja por defecto de tawk.to — Bec la reemplaza
-Tawk_API.onLoad = function() {
-  Tawk_API.hideWidget();
-};
-
-(function(){
-  var s1 = document.createElement("script"),
-      s0 = document.getElementsByTagName("script")[0];
-  s1.async = true;
-  s1.src = 'https://embed.tawk.to/69d6df0cb7c31c1c3301a274/1jlnlei12';
-  s1.charset = 'UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1, s0);
-})();
-</script>
-
 <!-- ── FUENTES BEC ── -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- ── ESTILOS BEC ── -->
 <style>
-  /* Logo unit: chevron pegado sobre la letra */
   .bec-logo-unit {
     display: flex; flex-direction: column;
     align-items: center; line-height: 1;
@@ -647,7 +612,6 @@ Tawk_API.onLoad = function() {
     box-shadow: 0 4px 20px rgba(43,95,236,0.35);
     transition: background 0.18s, box-shadow 0.2s, transform 0.15s;
     z-index: 99998; outline: none;
-    font-family: 'Cormorant Garamond', serif;
   }
   #bec-fab:hover {
     background: #3B6FFF;
@@ -662,10 +626,147 @@ Tawk_API.onLoad = function() {
     letter-spacing: 0.01em; white-space: nowrap;
   }
 
-  /* Ocultar burbuja nativa de tawk.to */
-  #tawk-bubble-container,
-  .tawk-min-container,
-  iframe[title*="tawk"] { display: none !important; }
+  /* Panel de chat */
+  #bec-panel {
+    position: fixed; bottom: 90px; right: 24px;
+    width: 352px; border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    display: flex; flex-direction: column; overflow: hidden;
+    z-index: 99997;
+    transform: translateY(14px) scale(0.97);
+    opacity: 0; pointer-events: none;
+    transition: transform 0.24s cubic-bezier(0.34,1.46,0.64,1), opacity 0.2s ease;
+    max-height: 520px;
+  }
+  #bec-panel.bec-open {
+    transform: translateY(0) scale(1);
+    opacity: 1; pointer-events: all;
+  }
+
+  /* Header */
+  .bec-header {
+    background: #2B5FEC; padding: 13px 14px;
+    display: flex; align-items: center; gap: 11px; flex-shrink: 0;
+  }
+  .bec-header-identity { display: flex; align-items: center; gap: 11px; flex: 1; }
+  .bec-header .bec-logo-letter { font-size: 24px; }
+  .bec-header-title { display: flex; flex-direction: column; }
+  .bec-ht-name {
+    color: white; font-family: 'Cormorant Garamond', serif;
+    font-size: 21px; font-weight: 700; line-height: 1.1;
+  }
+  .bec-ht-sub { color: rgba(255,255,255,0.6); font-size: 10.5px; letter-spacing: 0.03em; }
+  .bec-header-online { display: flex; align-items: center; gap: 5px; margin-left: auto; }
+  .bec-online-dot {
+    width: 7px; height: 7px; background: #4ade80; border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(74,222,128,0.3);
+  }
+  .bec-online-txt { color: rgba(255,255,255,0.55); font-size: 10px; }
+  .bec-close-btn {
+    width: 30px; height: 30px; background: white;
+    border-radius: 8px; border: none;
+    color: rgba(30,40,70,0.45); font-size: 15px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: box-shadow 0.18s, color 0.15s;
+    font-family: 'DM Sans', sans-serif; flex-shrink: 0;
+  }
+  .bec-close-btn:hover { color: rgba(30,40,70,0.75); box-shadow: 0 0 0 3px rgba(255,255,255,0.28); }
+
+  /* Mensajes */
+  #bec-messages {
+    flex: 1; overflow-y: auto; background: #f4f6fb;
+    padding: 16px 14px; display: flex; flex-direction: column;
+    gap: 8px; scroll-behavior: smooth;
+  }
+  #bec-messages::-webkit-scrollbar { width: 3px; }
+  #bec-messages::-webkit-scrollbar-thumb { background: #d0d8ec; border-radius: 3px; }
+
+  .bec-msg {
+    max-width: 87%; padding: 10px 13px;
+    font-size: 13.5px; line-height: 1.55;
+    animation: becMsgIn 0.18s ease;
+    font-family: 'DM Sans', sans-serif;
+  }
+  @keyframes becMsgIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .bec-msg.bec-bot {
+    background: white; color: #0a1f3d;
+    border-radius: 12px 12px 12px 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07); align-self: flex-start;
+  }
+  .bec-msg.bec-user {
+    background: #2B5FEC; color: white;
+    border-radius: 12px 12px 2px 12px; align-self: flex-end;
+  }
+  .bec-msg.bec-error {
+    background: #fff0f0; color: #c0392b;
+    border-radius: 12px 12px 12px 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07); align-self: flex-start;
+    font-size: 12.5px;
+  }
+
+  /* Quick replies */
+  .bec-quick-replies {
+    display: flex; flex-direction: column; gap: 6px;
+    align-self: stretch; margin-top: 2px;
+    animation: becMsgIn 0.22s ease;
+  }
+  .bec-qr-btn {
+    background: white; border: 1.5px solid #dde3f0;
+    border-radius: 10px; padding: 9px 13px;
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    color: #1a3a6b; text-align: left; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s; line-height: 1.4;
+  }
+  .bec-qr-btn:hover { border-color: #2B5FEC; background: #f0f4ff; transform: translateX(2px); }
+
+  /* Typing */
+  .bec-typing {
+    display: flex; align-items: center; gap: 4px;
+    padding: 10px 14px; background: white;
+    border-radius: 12px 12px 12px 2px; align-self: flex-start;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07); width: fit-content;
+  }
+  .bec-typing span {
+    width: 6px; height: 6px; background: #b0bcd6;
+    border-radius: 50%; animation: becDot 1.2s infinite;
+  }
+  .bec-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .bec-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes becDot {
+    0%,80%,100% { transform: scale(1); opacity: 0.5; }
+    40%          { transform: scale(1.3); opacity: 1; }
+  }
+
+  /* Input */
+  .bec-input-area {
+    background: white; padding: 10px 12px;
+    display: flex; gap: 9px; align-items: center;
+    border-top: 1px solid #e8ecf5; flex-shrink: 0;
+  }
+  #bec-input {
+    flex: 1; border: 1.5px solid #dde3f0; border-radius: 10px;
+    padding: 9px 13px; font-size: 13px;
+    font-family: 'DM Sans', sans-serif; color: #0a1f3d;
+    outline: none; background: #f9fafc; transition: border-color 0.15s;
+  }
+  #bec-input::placeholder { color: #a0aec0; }
+  #bec-input:focus { border-color: #2B5FEC; background: white; }
+  .bec-send-btn {
+    width: 38px; height: 38px; background: #2B5FEC;
+    border: none; border-radius: 10px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+  }
+  .bec-send-btn:hover {
+    background: #3B6FFF;
+    box-shadow: 0 0 0 4px rgba(59,111,255,0.28), 0 6px 24px rgba(43,95,236,0.65);
+    transform: translateY(-1px);
+  }
+  .bec-send-btn:active { transform: translateY(0); }
+  .bec-send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 </style>
 
 <!-- ── FAB BEC ── -->
@@ -679,50 +780,263 @@ Tawk_API.onLoad = function() {
   <span id="bec-fab-label">Parler à Bec</span>
 </button>
 
+<!-- ── PANEL DE CHAT ── -->
+<div id="bec-panel" role="dialog" aria-label="Chat Bec">
+
+  <div class="bec-header">
+    <div class="bec-header-identity">
+      <div class="bec-logo-unit">
+        <svg viewBox="0 0 40 12" width="24" height="7" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="0,10 20,0 40,10 20,4" fill="#E8920A"/>
+        </svg>
+        <span class="bec-logo-letter">B</span>
+      </div>
+      <div class="bec-header-title">
+        <span class="bec-ht-name">Bec</span>
+        <span class="bec-ht-sub" id="bec-header-sub">Calbec Opérations</span>
+      </div>
+    </div>
+    <div class="bec-header-online">
+      <div class="bec-online-dot"></div>
+      <span class="bec-online-txt" id="bec-online-txt">En ligne</span>
+    </div>
+    <button class="bec-close-btn" onclick="becToggle()" aria-label="Fermer">✕</button>
+  </div>
+
+  <div id="bec-messages"></div>
+
+  <div class="bec-input-area">
+    <input type="text" id="bec-input" onkeydown="becHandleKey(event)" autocomplete="off"/>
+    <button class="bec-send-btn" id="bec-send" onclick="becSend()" aria-label="Envoyer">
+      <svg width="17" height="17" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 12L22 2L15 22L11 13L2 12Z" fill="white"/>
+      </svg>
+    </button>
+  </div>
+
+</div>
+
 <!-- ── LÓGICA BEC ── -->
 <script>
 (function() {
 
-  /* ── Textos por idioma ── */
-  var LABELS = {
-    fr: "Parler à Bec",
-    en: "Talk to Bec",
-    es: "Hablar con Bec"
+  /* ══════════════════════════════════════
+     URL del servidor Vercel
+     → Reemplazar con tu URL real después
+  ══════════════════════════════════════ */
+  var BEC_API_URL = 'https://bec-api.vercel.app/api/chat';
+
+  /* ══════════════════════════════════════
+     TEXTOS POR IDIOMA
+  ══════════════════════════════════════ */
+  var BEC_COPY = {
+    fr: {
+      fabLabel:    'Parler à Bec',
+      headerSub:   'Calbec Opérations',
+      onlineTxt:   'En ligne',
+      placeholder: 'Posez une question…',
+      welcome:     'Bonjour! Imaginez votre entrepôt avec des flux clairs, une équipe alignée et zéro gaspillage de temps. Calbec rend ça concret — directement sur votre plancher, avec vous. Comment puis-je vous aider?',
+      quickReplies: [
+        "Réorganisation de l'entrepôt — par où commencer?",
+        "En quoi Calbec est différent d'un consultant?",
+        "Comment se déroule une intervention terrain?"
+      ],
+      errorMsg: "Je rencontre une difficulté technique. Écrivez-nous à contact@calbecoperations.com"
+    },
+    en: {
+      fabLabel:    'Talk to Bec',
+      headerSub:   'Calbec Operations',
+      onlineTxt:   'Online',
+      placeholder: 'Ask a question…',
+      welcome:     "Hi! Imagine your warehouse with clear flows, an aligned team and zero wasted time. Calbec makes that happen — directly on your floor, with you. How can I help?",
+      quickReplies: [
+        "Warehouse reorganization — where do we start?",
+        "How is Calbec different from a consultant?",
+        "What does an on-site intervention look like?"
+      ],
+      errorMsg: "I'm having a technical issue. Write to us at contact@calbecoperations.com"
+    },
+    es: {
+      fabLabel:    'Hablar con Bec',
+      headerSub:   'Calbec Operaciones',
+      onlineTxt:   'En línea',
+      placeholder: 'Haz una pregunta…',
+      welcome:     '¡Hola! Imagina tu almacén con flujos claros, un equipo alineado y cero pérdida de tiempo. Calbec lo hace realidad — directamente en tu piso de operaciones, contigo. ¿Cómo puedo ayudarte?',
+      quickReplies: [
+        "Reorganización del almacén — ¿por dónde empezamos?",
+        "¿En qué se diferencia Calbec de un consultor?",
+        "¿Cómo funciona una intervención en sitio?"
+      ],
+      errorMsg: "Tengo un problema técnico. Escríbenos a contact@calbecoperations.com"
+    }
   };
 
-  /* ── Detectar idioma de la página ── */
-  var pageLang = (document.documentElement.lang || 'fr').substring(0, 2).toLowerCase();
-  var lang = LABELS[pageLang] ? pageLang : 'fr';
+  /* ══════════════════════════════════════
+     ESTADO
+  ══════════════════════════════════════ */
+  var becLang         = 'fr';
+  var becOpen         = false;
+  var becInitialized  = false;
+  var becLoading      = false;
+  var becHistory      = []; // historial de conversación para contexto
 
-  /* ── Aplicar label al FAB ── */
-  document.getElementById('bec-fab-label').textContent = LABELS[lang];
+  /* ══════════════════════════════════════
+     DETECTAR IDIOMA DE LA PÁGINA
+  ══════════════════════════════════════ */
+  function becDetectLang() {
+    var l = (document.documentElement.lang || 'fr').substring(0, 2).toLowerCase();
+    return BEC_COPY[l] ? l : 'fr';
+  }
 
-  /* ── Actualizar si el idioma cambia dinámicamente
-        (para sitios que cambian lang= sin recargar) ── */
-  var langObserver = new MutationObserver(function() {
-    var newLang = (document.documentElement.lang || 'fr').substring(0, 2).toLowerCase();
-    if (LABELS[newLang]) {
-      document.getElementById('bec-fab-label').textContent = LABELS[newLang];
+  function becApplyLang(l) {
+    becLang = l;
+    var c = BEC_COPY[l];
+    document.getElementById('bec-fab-label').textContent  = c.fabLabel;
+    document.getElementById('bec-header-sub').textContent = c.headerSub;
+    document.getElementById('bec-online-txt').textContent = c.onlineTxt;
+    document.getElementById('bec-input').placeholder      = c.placeholder;
+  }
+
+  /* Observar cambios de lang= en tiempo real */
+  new MutationObserver(function() {
+    var newLang = becDetectLang();
+    if (newLang !== becLang) {
+      becApplyLang(newLang);
     }
-  });
-  langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
-  /* ── Abrir / cerrar tawk.to al clic en el FAB ── */
+  /* Aplicar idioma inicial */
+  becApplyLang(becDetectLang());
+
+  /* ══════════════════════════════════════
+     ABRIR / CERRAR PANEL
+  ══════════════════════════════════════ */
   window.becToggle = function() {
-    if (typeof Tawk_API !== 'undefined' && Tawk_API.toggle) {
-      Tawk_API.toggle();
+    becOpen = !becOpen;
+    document.getElementById('bec-panel').classList.toggle('bec-open', becOpen);
+    if (becOpen) {
+      if (!becInitialized) becInit();
+      setTimeout(function() { document.getElementById('bec-input').focus(); }, 240);
     }
   };
 
-  /* ── Ocultar burbuja nativa cuando tawk.to esté listo ── */
-  var hideInterval = setInterval(function() {
-    if (typeof Tawk_API !== 'undefined' && Tawk_API.hideWidget) {
-      Tawk_API.hideWidget();
-      clearInterval(hideInterval);
-    }
-  }, 500);
+  /* ══════════════════════════════════════
+     INICIO DE CONVERSACIÓN
+  ══════════════════════════════════════ */
+  function becInit() {
+    becInitialized = true;
+    var c = BEC_COPY[becLang];
+    setTimeout(function() {
+      becAddMsg(c.welcome, 'bec-bot');
+      setTimeout(becShowQuickReplies, 500);
+    }, 320);
+  }
+
+  function becShowQuickReplies() {
+    var c    = BEC_COPY[becLang];
+    var msgs = document.getElementById('bec-messages');
+    var wrap = document.createElement('div');
+    wrap.className = 'bec-quick-replies';
+    wrap.id = 'bec-quick-replies';
+    c.quickReplies.forEach(function(q) {
+      var btn = document.createElement('button');
+      btn.className   = 'bec-qr-btn';
+      btn.textContent = q;
+      btn.onclick = function() { becHandleQR(q); };
+      wrap.appendChild(btn);
+    });
+    msgs.appendChild(wrap);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function becHandleQR(q) {
+    var qr = document.getElementById('bec-quick-replies');
+    if (qr) qr.remove();
+    becAddMsg(q, 'bec-user');
+    becHistory.push({ role: 'user', content: q });
+    becCallAPI(q);
+  }
+
+  /* ══════════════════════════════════════
+     INPUT
+  ══════════════════════════════════════ */
+  window.becHandleKey = function(e) { if (e.key === 'Enter') becSend(); };
+
+  window.becSend = function() {
+    if (becLoading) return;
+    var input = document.getElementById('bec-input');
+    var text  = input.value.trim();
+    if (!text) return;
+    var qr = document.getElementById('bec-quick-replies');
+    if (qr) qr.remove();
+    becAddMsg(text, 'bec-user');
+    becHistory.push({ role: 'user', content: text });
+    input.value = '';
+    becCallAPI(text);
+  };
+
+  /* ══════════════════════════════════════
+     LLAMADA A LA API (Vercel → Claude)
+  ══════════════════════════════════════ */
+  function becCallAPI(message) {
+    becLoading = true;
+    document.getElementById('bec-send').disabled = true;
+    becShowTyping();
+
+    fetch(BEC_API_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        message: message,
+        lang:    becLang,
+        history: becHistory.slice(-10) // últimos 10 turnos para contexto
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      becRemoveTyping();
+      var reply = data.reply || BEC_COPY[becLang].errorMsg;
+      becAddMsg(reply, 'bec-bot');
+      becHistory.push({ role: 'assistant', content: reply });
+    })
+    .catch(function() {
+      becRemoveTyping();
+      becAddMsg(BEC_COPY[becLang].errorMsg, 'bec-error');
+    })
+    .finally(function() {
+      becLoading = false;
+      document.getElementById('bec-send').disabled = false;
+      document.getElementById('bec-input').focus();
+    });
+  }
+
+  /* ══════════════════════════════════════
+     HELPERS UI
+  ══════════════════════════════════════ */
+  function becAddMsg(text, cls) {
+    var msgs = document.getElementById('bec-messages');
+    var d    = document.createElement('div');
+    d.className   = 'bec-msg ' + cls;
+    d.textContent = text;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function becShowTyping() {
+    var msgs = document.getElementById('bec-messages');
+    var t    = document.createElement('div');
+    t.className = 'bec-typing'; t.id = 'bec-typing';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(t);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function becRemoveTyping() {
+    var t = document.getElementById('bec-typing');
+    if (t) t.remove();
+  }
 
 })();
 </script>
-<!--End of Bec Widget--></body>
+<!--End of Bec Widget-->
 </html>
