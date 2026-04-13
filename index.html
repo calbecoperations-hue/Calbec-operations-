@@ -898,10 +898,18 @@ window.addEventListener('load',function(){
   }
 
   /* Observar cambios de lang= en tiempo real */
-  new MutationObserver(function() {
+new MutationObserver(function() {
     var newLang = becDetectLang();
     if (newLang !== becLang) {
       becApplyLang(newLang);
+      // Reiniciar chat al cambiar idioma
+      if (becInitialized) {
+        document.getElementById('bec-messages').innerHTML = '';
+        becInitialized = false;
+        var qr = document.getElementById('bec-quick-replies');
+        if (qr) qr.remove();
+        becInit();
+      }
     }
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
