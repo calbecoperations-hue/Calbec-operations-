@@ -842,6 +842,9 @@ window.addEventListener('load',function(){
         "Comment se déroule une intervention terrain?"
       ],
       errorMsg: "Je rencontre une difficulté technique. Écrivez-nous à bonjour@calbecoperations.ca"
+      inactivePrompt: "Avez-vous d'autres questions? Si vous souhaitez recevoir un résumé de notre échange, laissez votre courriel ici.",
+transcriptSent: "Transcript envoyé! Nous vous répondrons sous peu à bonjour@calbecoperations.ca",
+emailPlaceholder: "votre@courriel.com",
     },
     en: {
       fabLabel:    'Talk to Bec',
@@ -855,6 +858,9 @@ window.addEventListener('load',function(){
         "What does an on-site intervention look like?"
       ],
       errorMsg: "I'm having a technical issue. Write to us at bonjour@calbecoperations.ca"
+  inactivePrompt: "Do you have any other questions? If you'd like a summary of our conversation, leave your email here.",
+transcriptSent: "Transcript sent! We'll follow up soon at bonjour@calbecoperations.ca",
+emailPlaceholder: "your@email.com",
     },
     es: {
       fabLabel:    'Hablar con Bec',
@@ -868,6 +874,9 @@ window.addEventListener('load',function(){
         "¿Cómo funciona una intervención en sitio?"
       ],
       errorMsg: "Tengo un problema técnico. Escríbenos a bonjour@calbecoperations.ca"
+    inactivePrompt: "¿Tienes alguna otra pregunta? Si quieres recibir un resumen de nuestra conversación, deja tu correo aquí.",
+transcriptSent: "¡Transcript enviado! Te responderemos pronto a bonjour@calbecoperations.ca",
+emailPlaceholder: "tu@correo.com",
     }
   };
 
@@ -879,10 +888,105 @@ window.addEventListener('load',function(){
   var becInitialized  = false;
   var becLoading      = false;
   var becHistory      = []; // historial de conversación para contexto
+  var becTimer5  = null;
+var becTimer10 = null;
+var becTranscriptSent = false;
 
   /* ══════════════════════════════════════
      DETECTAR IDIOMA DE LA PÁGINA
-  ══════════════════════════════════════ */
+ 
+  /* ── FUNCIÓN: reiniciar timers después de cada mensaje (AGREGAR) ── */
+  function becResetTimers() {
+    // Limpiar timers existentes
+    if (becTimer5)  clearTimeout(becTimer5);
+    if (becTimer10) clearTimeout(becTimer10);
+    becTranscriptSent = false;
+
+    // Solo activar si hay historial de conversación
+    if (becHistory.length < 2) return;
+
+    // Timer 5 minutos → mostrar prompt de transcript
+    becTimer5 = setTimeout(function() {
+      becShowTranscriptPrompt();
+    }, 5 * 60 * 1000);
+
+    // Timer 10 minutos → envío automático
+    becTimer10 = setTimeout(function() {
+      becSendTranscript(null, 'auto_10min');
+    }, 10 * 60 * 1000);
+  }
+
+  /* ── FUNCIÓN: mostrar prompt de transcript al visitante (AGREGAR) ── */
+  function becShowTranscriptPrompt() {
+    if (becTranscriptSent) return;
+    var c = BEC_COPY[becLang];
+    var msgs = document.getElementById('bec-messages');
+
+    // Mensaje de Bec con campo de correo
+    var wrap = document.createElement('div');
+    wrap.id = 'bec-transcript-prompt';
+    wrap.style.cssText = 'animation: becMsgIn 0.18s ease;';
+    wrap.innerHTML = `
+      <div class="bec-msg bec-bot" style="max-width:100%;">
+        ${c.inactivePrompt || "Avez-vous d'autres questions? Laissez votre courriel pour recevoir un résumé."}
+      </div>
+      <div style="display:flex; gap:8px; margin-top:6px; align-self:stretch;">
+        <input
+          type="email"
+          id="bec-email-input"
+          placeholder="${c.emailPlaceholder || 'votre@courriel.com'}"
+          style="flex:1; border:1.5px solid #dde3f0; border-radius:10px; padding:9px 13px; font-size:13px; font-family:'DM Sans',sans-serif; color:#0a1f3d; outline:none; background:#f9fafc;"
+          onkeydown="if(event.key==='Enter') becSubmitEmail()"
+        />
+        <button
+          onclick="becSubmitEmail()"
+          style="padding:0 16px; background:#2B5FEC; color:white; border:none; border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; white-space:nowrap;"
+        >
+          Envoyer →
+        </button>
+      </div>`;
+    msgs.appendChild(wrap);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  /* ── FUNCIÓN: enviar transcript con correo del visitante (AGREGAR) ── */
+  window.becSubmitEmail = function() {
+    var emailInput = document.getElementById('bec-email-input');
+    var email = emailInput ? emailInput.value.trim() : null;
+    var prompt = document.getElementById('bec-transcript-prompt');
+    if (prompt) prompt.remove();
+    becSendTranscript(email, 'visitor_request');
+  };
+
+  /* ── FUNCIÓN: llamar al endpoint /api/transcript (AGREGAR) ── */
+  function becSendTranscript(visitorEmail, trigger) {
+    if (becTranscriptSent) return;
+    if (becHistory.length < 2) return;
+    becTranscriptSent = true;
+
+    // Limpiar timers pendientes
+    if (becTimer5)  clearTimeout(becTimer5);
+    if (becTimer10) clearTimeout(becTimer10);
+
+    fetch('https://bec-api.vercel.app/api/transcript', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        history: becHistory,
+        visitorEmail: visitorEmail || null,
+        lang: becLang,
+        trigger: trigger
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function() {
+      var c = BEC_COPY[becLang];
+      becAddMsg(c.transcriptSent || 'Transcript envoyé à bonjour@calbecoperations.ca', 'bec-bot');
+    })
+    .catch(function() {
+      console.warn('[BEC] Transcript send failed');
+    });
+  }
   function becDetectLang() {
     var l = (document.documentElement.lang || 'fr').substring(0, 2).toLowerCase();
     return BEC_COPY[l] ? l : 'fr';
@@ -962,6 +1066,7 @@ new MutationObserver(function() {
     if (qr) qr.remove();
     becAddMsg(q, 'bec-user');
     becHistory.push({ role: 'user', content: q });
+    becResetTimers();
     becCallAPI(q);
   }
 
@@ -1006,6 +1111,7 @@ new MutationObserver(function() {
       var reply = data.reply || BEC_COPY[becLang].errorMsg;
       becAddMsg(reply, 'bec-bot');
       becHistory.push({ role: 'assistant', content: reply });
+      becResetTimers();
     })
     .catch(function() {
       becRemoveTyping();
