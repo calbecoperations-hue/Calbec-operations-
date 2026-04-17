@@ -576,14 +576,19 @@ window.addEventListener('scroll',()=>{
 function acceptCookies(){
   localStorage.setItem('cookieConsent','accepted');
   document.getElementById('cookie-banner').style.display='none';
+  document.getElementById('bec-fab').style.bottom='24px';
 }
 function declineCookies(){
   localStorage.setItem('cookieConsent','declined');
   document.getElementById('cookie-banner').style.display='none';
+  document.getElementById('bec-fab').style.bottom='24px';
 }
 window.addEventListener('load',function(){
   if(!localStorage.getItem('cookieConsent')){
-    document.getElementById('cookie-banner').style.display='flex';
+    var banner=document.getElementById('cookie-banner');
+    banner.style.display='flex';
+    var bh=banner.offsetHeight||60;
+    document.getElementById('bec-fab').style.bottom=(24+bh+8)+'px';
   }
 });
 </script>
