@@ -1036,7 +1036,19 @@ new MutationObserver(function() {
   window.becToggle = function() {
     becOpen = !becOpen;
     document.getElementById('bec-panel').classList.toggle('bec-open', becOpen);
-    document.getElementById('bec-fab').style.display = becOpen ? 'none' : 'flex';
+    var fab = document.getElementById('bec-fab');
+    var fabLabel = document.getElementById('bec-fab-label');
+    if (becOpen) {
+      fab.style.width = '54px';
+      fab.style.padding = '0';
+      fab.style.justifyContent = 'center';
+      fabLabel.style.display = 'none';
+    } else {
+      fab.style.width = '';
+      fab.style.padding = '';
+      fab.style.justifyContent = '';
+      fabLabel.style.display = '';
+    }
     if (becOpen) {
       if (!becInitialized) becInit();
       setTimeout(function() { document.getElementById('bec-input').focus(); }, 240);
