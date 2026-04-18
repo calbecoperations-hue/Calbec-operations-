@@ -1034,6 +1034,7 @@ new MutationObserver(function() {
   window.becToggle = function() {
     becOpen = !becOpen;
     document.getElementById('bec-panel').classList.toggle('bec-open', becOpen);
+    document.getElementById('bec-fab').style.display = becOpen ? 'none' : 'flex';
     if (becOpen) {
       if (!becInitialized) becInit();
       setTimeout(function() { document.getElementById('bec-input').focus(); }, 240);
