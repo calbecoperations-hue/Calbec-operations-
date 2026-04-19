@@ -577,11 +577,13 @@ function acceptCookies(){
   localStorage.setItem('cookieConsent','accepted');
   document.getElementById('cookie-banner').style.display='none';
   document.getElementById('bec-fab').style.bottom='24px';
+document.getElementById('bec-nlp-bubble').style.bottom='96px';
 }
 function declineCookies(){
   localStorage.setItem('cookieConsent','declined');
   document.getElementById('cookie-banner').style.display='none';
   document.getElementById('bec-fab').style.bottom='24px';
+document.getElementById('bec-nlp-bubble').style.bottom='96px';
 }
 window.addEventListener('load',function(){
   if(!localStorage.getItem('cookieConsent')){
@@ -589,6 +591,7 @@ window.addEventListener('load',function(){
     banner.style.display='flex';
     var bh=banner.offsetHeight||60;
     document.getElementById('bec-fab').style.bottom=(24+bh+8)+'px';
+document.getElementById('bec-nlp-bubble').style.bottom=(96+bh+8)+'px';
   } else {
     document.getElementById('bec-fab').style.bottom='24px';
   }
