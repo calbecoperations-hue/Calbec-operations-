@@ -777,8 +777,116 @@ touch-action: manipulation;
   }
   .bec-send-btn:active { transform: translateY(0); }
   .bec-send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-</style>
+  /* ══════════════════════════════════════
+     NLP BUBBLE — Gancho de atención
+  ══════════════════════════════════════ */
+  #bec-nlp-bubble {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    max-width: 320px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 14px 16px 14px 54px;
+    z-index: 99996;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  #bec-nlp-bubble.bec-nlp-show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+  #bec-nlp-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    right: 36px;
+    width: 14px;
+    height: 14px;
+    background: white;
+    transform: rotate(45deg);
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.06);
+  }
+  .bec-nlp-avatar {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 32px;
+    height: 32px;
+    background: #2B5FEC;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .bec-nlp-avatar svg {
+    display: block;
+    margin-bottom: -3px;
+  }
+  .bec-nlp-avatar-letter {
+    color: white;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .bec-nlp-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #0a1f3d;
+    padding-right: 18px;
+  }
+  .bec-nlp-text strong {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .bec-nlp-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    color: #a0aec0;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+  .bec-nlp-close:hover { color: #0a1f3d; }
 
+  @media (max-width: 480px) {
+    #bec-nlp-bubble {
+      max-width: calc(100vw - 48px);
+      bottom: 88px;
+    }
+  }
+</style>
+<!-- ── NLP BUBBLE ── -->
+<div id="bec-nlp-bubble" role="dialog" aria-label="Bec message">
+  <div class="bec-nlp-avatar">
+    <svg viewBox="0 0 40 12" width="16" height="5" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,10 20,0 40,10 20,4" fill="#E8920A"/>
+    </svg>
+    <span class="bec-nlp-avatar-letter">B</span>
+  </div>
+  <button class="bec-nlp-close" onclick="becNlpDismiss()" aria-label="Fermer">✕</button>
+  <div class="bec-nlp-text" id="bec-nlp-text"></div>
+</div>
 <!-- ── FAB BEC ── -->
 <button id="bec-fab" onclick="becToggle()" aria-label="Chat Bec">
   <div class="bec-logo-unit">
@@ -855,6 +963,7 @@ touch-action: manipulation;
       inactivePrompt: "Avez-vous d'autres questions? Si vous souhaitez recevoir un résumé de notre échange, laissez votre courriel ici.",
 transcriptSent: "Transcript envoyé! Nous vous répondrons sous peu à bonjour@calbecoperations.ca",
 emailPlaceholder: "votre@courriel.com",
+      nlpBubble: "<strong>Vous sentez ce potentiel inexploité dans votre entrepôt ?</strong>Bec, l'assistant IA de Calbec, vous montre comment le récupérer.",
     },
     en: {
       fabLabel:    'Talk to Bec',
@@ -871,6 +980,7 @@ emailPlaceholder: "votre@courriel.com",
   inactivePrompt: "Do you have any other questions? If you'd like a summary of our conversation, leave your email here.",
 transcriptSent: "Transcript sent! We'll follow up soon at bonjour@calbecoperations.ca",
 emailPlaceholder: "your@email.com",
+      nlpBubble: "<strong>See that lost space in your warehouse?</strong>Bec, Calbec's AI assistant, shows you how to get it back.",
     },
     es: {
       fabLabel:    'Hablar con Bec',
@@ -887,6 +997,7 @@ emailPlaceholder: "your@email.com",
     inactivePrompt: "¿Tienes alguna otra pregunta? Si quieres recibir un resumen de nuestra conversación, deja tu correo aquí.",
 transcriptSent: "¡Transcript enviado! Te responderemos pronto a bonjour@calbecoperations.ca",
 emailPlaceholder: "tu@correo.com",
+      nlpBubble: "<strong>¿Ves ese espacio perdido en tu almacén?</strong>Bec, el asistente IA de Calbec, te dice cómo recuperarlo.",
     }
   };
 
@@ -1172,7 +1283,51 @@ new MutationObserver(function() {
     var t = document.getElementById('bec-typing');
     if (t) t.remove();
   }
+/* ══════════════════════════════════════
+     NLP BUBBLE — Lógica de aparición
+  ══════════════════════════════════════ */
+  function becNlpShow() {
+    // No mostrar si ya fue descartado en esta sesión
+    if (sessionStorage.getItem('becNlpDismissed') === 'true') return;
+    var bubble = document.getElementById('bec-nlp-bubble');
+    var textEl = document.getElementById('bec-nlp-text');
+    if (!bubble || !textEl) return;
+    textEl.innerHTML = BEC_COPY[becLang].nlpBubble;
+    bubble.classList.add('bec-nlp-show');
+  }
 
+  function becNlpHide() {
+    var bubble = document.getElementById('bec-nlp-bubble');
+    if (bubble) bubble.classList.remove('bec-nlp-show');
+  }
+
+  window.becNlpDismiss = function() {
+    sessionStorage.setItem('becNlpDismissed', 'true');
+    becNlpHide();
+  };
+
+  // Mostrar el bubble 2 segundos después de cargar
+  setTimeout(becNlpShow, 2000);
+
+  // Al abrir el panel de Bec, ocultar el bubble (y marcarlo como descartado)
+  var becOriginalToggle = window.becToggle;
+  window.becToggle = function() {
+    if (!becOpen) {
+      sessionStorage.setItem('becNlpDismissed', 'true');
+      becNlpHide();
+    }
+    becOriginalToggle();
+  };
+
+  // Actualizar texto del bubble cuando cambia el idioma
+  var becNlpLangObserver = new MutationObserver(function() {
+    var textEl = document.getElementById('bec-nlp-text');
+    var bubble = document.getElementById('bec-nlp-bubble');
+    if (textEl && bubble && bubble.classList.contains('bec-nlp-show')) {
+      textEl.innerHTML = BEC_COPY[becLang].nlpBubble;
+    }
+  });
+  becNlpLangObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 })();
 </script>
 <!--End of Bec Widget-->
