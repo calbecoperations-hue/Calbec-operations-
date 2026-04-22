@@ -655,7 +655,9 @@ touch-action: manipulation;
     transform: translateY(0) scale(1);
     opacity: 1; pointer-events: all;
   }
-
+body.bec-panel-open #bec-fab {
+  display: none;
+}
   /* Header */
   .bec-header {
     background: #2B5FEC; padding: 13px 14px;
@@ -1151,6 +1153,7 @@ new MutationObserver(function() {
   window.becToggle = function() {
     becOpen = !becOpen;
     document.getElementById('bec-panel').classList.toggle('bec-open', becOpen);
+    document.body.classList.toggle('bec-panel-open', becOpen);
     var fab = document.getElementById('bec-fab');
     var fabLabel = document.getElementById('bec-fab-label');
     if (becOpen) {
