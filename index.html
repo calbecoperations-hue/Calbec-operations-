@@ -769,22 +769,6 @@ touch-action: manipulation;
     font-family: 'DM Sans', sans-serif; color: #0a1f3d;
     outline: none; background: #f9fafc; transition: border-color 0.15s;
   }
-  .bec-input-placeholder {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 15px;
-  color: rgba(10, 31, 61, 0.35);
-  font-family: 'DM Sans', sans-serif;
-  pointer-events: none;
-  white-space: nowrap;
-  transition: opacity 0.15s ease;
-}
-.bec-input-placeholder.bec-input-placeholder-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
   #bec-input::placeholder { color: #a0aec0; }
   #bec-input:focus { border-color: #2B5FEC; background: white; }
   .bec-send-btn {
@@ -947,8 +931,7 @@ touch-action: manipulation;
   <div id="bec-messages"></div>
 
   <div class="bec-input-area">
-    <div id="bec-input-placeholder" class="bec-input-placeholder" data-fr="Demandez à Bec n'importe quoi" data-en="Ask Bec anything" data-es="Pregúntale a Bec lo que quieras">Demandez à Bec n'importe quoi</div>
-    <input type="text" id="bec-input" onkeydown="becHandleKey(event)" autocomplete="off"/>
+   <input type="text" id="bec-input" placeholder="Demandez à Bec n'importe quoi" onkeydown="becHandleKey(event)" autocomplete="off"/>
     <button class="bec-send-btn" id="bec-send" onclick="becSend()" aria-label="Envoyer">
       <svg width="17" height="17" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M2 12L22 2L15 22L11 13L2 12Z" fill="white"/>
@@ -1231,26 +1214,12 @@ new MutationObserver(function() {
   /* ══════════════════════════════════════
      INPUT
   ══════════════════════════════════════ */
-  window.becHandleKey = function(e) { 
-  becUpdatePlaceholder();
-  if (e.key === 'Enter') becSend(); 
-};
-
-function becUpdatePlaceholder() {
-  var input = document.getElementById('bec-input');
-  var placeholder = document.getElementById('bec-input-placeholder');
-  if (input.value.trim()) {
-    placeholder.classList.add('bec-input-placeholder-hidden');
-  } else {
-    placeholder.classList.remove('bec-input-placeholder-hidden');
-  }
-}
+  window.becHandleKey = function(e) { if (e.key === 'Enter') becSend(); };
 
   window.becSend = function() {
     if (becLoading) return;
     var input = document.getElementById('bec-input');
     var text  = input.value.trim();
-    becUpdatePlaceholder();
     if (!text) return;
     var qr = document.getElementById('bec-quick-replies');
     if (qr) qr.remove();
