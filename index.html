@@ -931,7 +931,7 @@ touch-action: manipulation;
   <div id="bec-messages"></div>
 
   <div class="bec-input-area">
-   <input type="text" id="bec-input" placeholder="Demandez à Bec n'importe quoi" onkeydown="becHandleKey(event)" autocomplete="off"/>
+   <input type="text" id="bec-input" onkeydown="becHandleKey(event)" autocomplete="off"/>
     <button class="bec-send-btn" id="bec-send" onclick="becSend()" aria-label="Envoyer">
       <svg width="17" height="17" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M2 12L22 2L15 22L11 13L2 12Z" fill="white"/>
@@ -959,7 +959,7 @@ touch-action: manipulation;
       fabLabel:    'Parler à Bec',
       headerSub:   'Calbec Opérations',
       onlineTxt:   'En ligne',
-      placeholder: 'Posez une question…',
+      placeholder: 'Demandez à Bec n\'importe quoi',
       welcome:     'Bonjour! Imaginez votre entrepôt avec des flux clairs, une équipe alignée et zéro gaspillage de temps. Calbec rend ça concret — directement sur votre plancher, avec vous. Comment puis-je vous aider?',
       quickReplies: [
         "Réorganisation de l'entrepôt — par où commencer?",
@@ -976,7 +976,7 @@ emailPlaceholder: "votre@courriel.com",
       fabLabel:    'Talk to Bec',
       headerSub:   'Calbec Operations',
       onlineTxt:   'Online',
-      placeholder: 'Ask a question…',
+      placeholder: 'Ask Bec anything',
       welcome:     "Hi! Imagine your warehouse with clear flows, an aligned team and zero wasted time. Calbec makes that happen — directly on your floor, with you. How can I help?",
       quickReplies: [
         "Warehouse reorganization — where do we start?",
@@ -993,7 +993,7 @@ emailPlaceholder: "your@email.com",
       fabLabel:    'Hablar con Bec',
       headerSub:   'Calbec Operaciones',
       onlineTxt:   'En línea',
-      placeholder: 'Haz una pregunta…',
+      placeholder: 'Pregúntale a Bec lo que quieras',
       welcome:     '¡Hola! Imagina tu almacén con flujos claros, un equipo alineado y cero pérdida de tiempo. Calbec lo hace realidad — directamente en tu piso de operaciones, contigo. ¿Cómo puedo ayudarte?',
       quickReplies: [
         "Reorganización del almacén — ¿por dónde empezamos?",
